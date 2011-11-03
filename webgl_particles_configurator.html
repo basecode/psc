@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - particles configurator</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+				text-align:center;
+			}
+
+			a {
+				color:#0078ff;
+			}
+
+			#info {
+				color: #fff;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index: 100;
+			}
+
+		</style>
+	</head>
+	<body>
+    <div id="info">
+		  <a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a>
+      - webgl particle system configurator by
+      <a href="http://twitter.com/basecode">basecode</a>
+		</div>
+
+		<script src="../threejs/build/Three.js"></script>
+		<script src="PSCParticleSystem.js"></script>
+		<script src="PSCVertex.js"></script>
+
+		<script src="../threejs/examples/js/Detector.js"></script>
+		<script src="../threejs/examples/js/RequestAnimationFrame.js"></script>
+		<script src="../threejs/examples/js/Stats.js"></script>
+
+		<script type="text/javascript">
+		
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var stats;
+			var camera, scene, renderer, parameters, i;
+			var configurator = Object.create(null);
+			
+			// configurator
+			configurator =  {"texture":"textures/test.png","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0,"startSize":44,"startSizeVariance":0,"endSize":5,"endSizeVariance":0,"position":{"x":425,"y":417},"positionVariance":{"x":5,"y":0},"speed":295,"speedVariance":30,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":10,"gravity":{"x":0,"y":50},"intendedParticles":2000};
+			/*configurator =  {"texture":"textures/test.png","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":30,"startSizeVariance":10,"endSize":40,"endSizeVariance":10,"position":{"x":425,"y":417},"positionVariance":{"x":0,"y":0},"speed":80,"speedVariance":10,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-60,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":2250};*/
+			
+			//var mouseX = 0, mouseY = 0;
+
+			//var windowHalfX = window.innerWidth / 2;
+			//var windowHalfY = window.innerHeight / 2;
+			
+			(function setup(win, doc) {
+			
+				var container = doc.createElement('div');
+				doc.body.appendChild(container);
+
+				// Camera params:
+				// field of view, aspect ratio for render output, near and far clipping plane. 
+				camera = new THREE.PerspectiveCamera( 100, win.innerWidth / win.innerHeight, 1, 1000 );
+				// move the camera backwards so we can see stuff!
+				camera.position.z = 1000;
+
+				// the scene contains all the 3D object data
+				scene = new THREE.Scene();
+				//scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+
+				/** setup particles */
+				var particles = new THREE.Geometry();
+				var material = new THREE.ParticleBasicMaterial({
+					color: 0xFFFFFF,
+					size: 190,
+					map: THREE.ImageUtils.loadTexture(configurator.texture),
+					blending: THREE[configurator.blending],
+					transparent: true,
+					vertexColors: true
+				});
+
+				for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
+					particle = new PSCVertex(configurator);
+					particles.vertices[i] = particle;
+					//setup particle color
+					colors[i] = new THREE.Color();
+				}
+				particles.colors = colors;
+				
+				/** setup particle system */
+				var particleSystem = new PSCParticleSystem(particles, material, configurator);
+
+				scene.add(particleSystem);
+
+
+				renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
+				renderer.setSize( win.innerWidth, win.innerHeight );
+				container.appendChild(renderer.domElement);
+
+				/**
+				  setup stats
+				  @dependencies container
+				*/
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+				//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				//document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				//document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+			})(window, document);
+
+			/*function onDocumentMouseMove( event ) {
+
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+
+			}
+
+			function onDocumentTouchStart( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+			}
+
+			function onDocumentTouchMove( event ) {
+
+				if ( event.touches.length == 1 ) {
+
+					event.preventDefault();
+
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+
+				}
+
+			}*/
+
+			//
+
+			(function animate(timestamp) {
+				var sceneObjects = scene.objects;
+				var i = sceneObjects.length;
+				while(i-->0) {
+					if (sceneObjects[i] instanceof PSCParticleSystem) {
+						// refresh psc particle system
+						once_console("we're in");
+						sceneObjects[i].refresh(timestamp);
+					}
+				}
+
+				renderer.clear();
+				renderer.render( scene, camera );
+				stats.update();
+				requestAnimationFrame( animate );
+
+				return;
+
+				var particleSystem = scene.objects[0];
+				var config = particleSystem.config;
+				var particles      = particleSystem.geometry;
+				var delta          = (timestamp - particleSystem.lastTimestamp) / 1000;
+				
+				particleSystem.lastTimestamp = timestamp;
+
+				var rate = 1.0 / particleSystem.emissionRate;
+				particleSystem.emitCounter += delta;
+				var particle, i = 0;
+				while( particleSystem.particleCount < config.intendedParticles && particleSystem.emitCounter > rate ) {
+					particle = particles.vertices[i++];
+					if (particle.isHidden()) {
+						particle.init(config);
+						particleSystem.particleCount += 1;
+						particleSystem.emitCounter -= rate;
+					}
+				}
+
+				//elapsed += delta;
+				//if(duration != -1 && duration < elapsed)
+				//[self stopSystem];
+
+				var i = 0, counter = particleSystem.particleCount;
+				while(counter--) {
+					// update particle
+					var particle = particles.vertices[i++];
+					
+					if (particle.isHidden()) {
+						continue;
+					}
+					
+					var particleColor = particle.color;
+					var geometryColor = particles.colors[counter];
+					//particle.position.addSelf({x:2,y:0});
+					particle.update(delta);
+					
+					geometryColor.setRGB( particleColor.r, particleColor.g, particleColor.b );
+				}
+				
+				// flag to the particle system that we've
+				// changed its vertices. This is the
+				// dirty little secret.
+				particleSystem.geometry.__dirtyVertices = true;
+				
+				// and render the scene from the perspective of the camera
+				
+
+			})(+new Date);
+			
+			/*function render(timestamp) {
+				//camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				//camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+				//camera.lookAt( scene.position );
+			}*/
+
+			var once = true;
+			function once_console(msg){
+				once && console.log("once: " + msg);
+				once = false;
+			}
+
+
+		</script>
+	</body>
+</html>
