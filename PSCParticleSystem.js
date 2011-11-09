@@ -117,7 +117,7 @@
 		return true;
 	}
 
-	proto.liveUpdateConfig = function(config) {
+	proto.liveConfigUpdate = function(config) {
 		this.config = config;
 	}
 
