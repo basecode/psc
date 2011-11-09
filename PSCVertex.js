@@ -28,8 +28,8 @@
 		 * timeToLive
 		 * prevent division by 0
 		 */
-        var sTimeToLive = max( 0, config.lifespan + config.lifespanVariance * Math.random() );
-        this.msTimeToLive = 1000 * sTimeToLive;
+     var sTimeToLive = max( 0, config.lifespan + config.lifespanVariance * Math.random() );
+     this.msTimeToLive = 1000 * sTimeToLive;
 	   
 		/** 
 		 * position
@@ -76,7 +76,7 @@
 		this.deltaColor = new THREE.Color().setRGB(
 			(endColor.r - startColor.r) / sTimeToLive,
 			(endColor.g - startColor.g) / sTimeToLive,
-		  	(endColor.b - startColor.b) / sTimeToLive
+		  (endColor.b - startColor.b) / sTimeToLive
 		);
 		this.deltaOpacity = (startOpacity - endOpacity) / sTimeToLive;
 
@@ -123,68 +123,65 @@
 	
 	proto.update = function(delta) {
 
-    		/**/
-    		var _gravity, diff;
-	        var msDelta = delta;
-            var sDelta  = delta/1000;
-	        var color = this.color;
-	        var deltaColor = this.deltaColor;
-	        var pos = this.position;
-	        var startPos = this.startPosition;
-	        var direction = this.direction;
-	        var size = this.size;
-	        
-	                    
-	        this.msTimeToLive -= msDelta;
-	        
-	        // time to say good bye
-	        if (this.msTimeToLive <= 0) {
-	        	this.hide();
-	        	return;
-	        }
+		/**/
+		var _gravity, diff;
+		var msDelta = delta;
+		var sDelta  = delta/1000;
+		var color = this.color;
+		var deltaColor = this.deltaColor;
+		var pos = this.position;
+		var startPos = this.startPosition;
+		var direction = this.direction;
+		var size = this.size;
 
-			var radial = new T.Vector2();
-			if(pos.x || pos.y) {
-				radial = pos.clone();
-				radial.multiplyScalar(1.0 / pos.length());
-			}
+		this.msTimeToLive -= msDelta;
 
-			var tangential = radial.clone();
-			radial.multiplyScalar(this.radialAcceleration);
-			
-			// tangential acceleration
-			var newy = tangential.x;
-			tangential.x = -tangential.y;
-			tangential.y = newy;
-			tangential.multiplyScalar(this.tangentialAcceleration);
+		// time to say good bye
+		if (this.msTimeToLive <= 0) {
+			this.hide();
+			return;
+		}
 
-			// (gravity + radial + tangential) * sDelta
-			var tmp = radial.clone();
-			tmp.addSelf(tangential).addSelf(this.gravity);
-			tmp.multiplyScalar(sDelta);
-			
-			this.direction.addSelf(tmp);
-			tmp = this.direction.clone();
-			tmp.multiplyScalar(sDelta);
+		var radial = new T.Vector2();
+		if(pos.x || pos.y) {
+			radial = pos.clone();
+			radial.multiplyScalar(1.0 / pos.length());
+		}
 
-			this.position.addSelf(tmp);
-			
-	        // color
-	        color.r += (deltaColor.r * sDelta);
-	        color.g += (deltaColor.g * sDelta);
-	        color.b += (deltaColor.b * sDelta);
-            this.opacity += (this.deltaOpacity * sDelta);
-	        
-	        // size
-	        /*size += (this.deltaSize * sDelta);
-	        this.size = max( 0, size);
+		var tangential = radial.clone();
+		radial.multiplyScalar(this.radialAcceleration);
 
-	        // angle
-	        //this.rotation += (this.deltaRotation * sDelta);
-			*/
+		// tangential acceleration
+		var newy = tangential.x;
+		tangential.x = -tangential.y;
+		tangential.y = newy;
+		tangential.multiplyScalar(this.tangentialAcceleration);
 
+		// (gravity + radial + tangential) * sDelta
+		var tmp = radial.clone();
+		tmp.addSelf(tangential).addSelf(this.gravity);
+		tmp.multiplyScalar(sDelta);
+		
+		this.direction.addSelf(tmp);
+		tmp = this.direction.clone();
+		tmp.multiplyScalar(sDelta);
 
-	        return this;
+		this.position.addSelf(tmp);
+
+		// color
+		color.r += (deltaColor.r * sDelta);
+		color.g += (deltaColor.g * sDelta);
+		color.b += (deltaColor.b * sDelta);
+		this.opacity += (this.deltaOpacity * sDelta);
+		
+		// size
+		size += (this.deltaSize * sDelta);
+		this.size = max( 0, size);
+		
+		// angle
+		//this.rotation += (this.deltaRotation * sDelta);
+
+		return this;
 	}
 
 })(window, THREE);

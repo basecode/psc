@@ -8,24 +8,78 @@
 			body {
 				background-color: #000000;
 				margin: 0px;
-				overflow: hidden;
-				font-family:Monospace;
-				font-size:13px;
 				text-align:center;
-				font-weight: bold;
-				text-align:center;
+				font-family:arial;
+				font-size:11px;
 			}
 
 			a {
 				color:#0078ff;
 			}
 
+			#screen, #info {
+				overflow:hidden;
+				position:fixed;
+			}
+
 			#info {
 				color: #fff;
-				position: absolute;
+				font-weight: bold;
+				font-size:13px;
+				font-family:Monospace;
 				top: 0px; width: 100%;
 				padding: 5px;
 				z-index: 100;
+			}
+
+			.configPanel { 
+				position:absolute;
+				right:0;
+				top:0;
+				width:250px;
+				padding:5px 10px;
+				background-color:#ddd;
+				border: 2px solid #222;
+				display: block;
+				margin: auto;
+				z-index:100;
+				text-align:left;
+			}
+			h3 {
+				background-color:#d0a251;
+				border-bottom:1px solid #b2841f;
+				text-shadow: 1px 1px 0px #c09348;
+				letter-spacing: 1px;
+				margin:0;
+				font-size:1em;
+				text-align:center;
+				padding:3px 0;
+				color:#52120d;
+			}
+			h4 {
+				background-color:#52120d;
+				border-bottom:1px solid #ce2b14;
+				text-shadow: 1px 1px 0px #000;
+				letter-spacing: 1px;
+				margin:0;
+				text-align:center;
+				padding:5px 0;
+				color:#f3f3f3;
+			}
+			p {
+				padding:5px;
+				background-color:#E8E8E8;
+				border-bottom:1px solid #ccc;
+				margin:2px 0;
+			}
+			label {
+				padding-right:5px;
+			}
+			input {
+				width:45px;
+			}
+			input[name=EXPORT_LONG], input[name=EXPORT_SHORT], input[name=IMPORT] {
+				width:170px;
 			}
 
 		</style>
@@ -37,205 +91,502 @@
       <a href="http://twitter.com/basecode">basecode</a>
 		</div>
 
-		<script src="../threejs/build/Three.js"></script>
-		<script src="PSCParticleSystem.js"></script>
-		<script src="PSCVertex.js"></script>
+		<div id="screen"></div>
 
-		<script src="../threejs/examples/js/Detector.js"></script>
-		<script src="../threejs/examples/js/RequestAnimationFrame.js"></script>
-		<script src="../threejs/examples/js/Stats.js"></script>
+		<div class="configPanel">
+			<h4>PREDEFINED CONFIGURATIONS</h4>
+			<p>
+					<select name="PREDEFINED_CONFIGURATIONS">
+							<option value="burner">Burner</option>
+							<option value="glitterParty">Glitter Party</option>
+							<option value="blueGalaxy">Blue Galaxy</option>
+							<option value="snow">Snow</option>
+							<option value="somethingBlue">Something Blue</option>
+							<option value="comet">Comet</option>
+							<option value="colorfulStars">Colorful Stars</option>
+							<option value="waterFountain">Water Fountain</option>
+							<option value="smoke">Smoke</option>
+							<option value="uxebu">uxebu</option>
+					</select>
+			</p>
+			<h4>PARTICLE CONFIGURATOR</h4>
+			<p>
+					<label>Particles:</label>
+					<input type="number" min="0" name="intendedParticles" value="5" style="width:55px;">
+			</p>
+			<p>
+					<label>Texture:</label>
+					<select name="texture">
+							<option value="fire">Fire</option>
+							<option value="Star">star</option>
+							<option value="Sun">sun</option>
+							<option value="uxebu-logo">uxebu</option>
+					</select>
+			</p>
+			<p>
+					<label>Lifespan:</label>
+					<input type="number" min="0" name="lifespan" value="2">
+					, <label>Var:</label>
+					<input type="number" min="0" name="lifespanVariance" value="0">
+			</p>
+			<p>
+					<label>Startsize:</label>
+					<input type="number" min="0" name="startSize" value="20">
+					, <label class="two">Var:</label>
+					<input type="number" min="0" name="startSizeVariance" value="0">
+			</p>
+			<p>
+					<label>Endsize:</label>
+					<input type="number" min="0" name="endSize" value="5">
+					, <label>Var:</label>
+					<input type="number" min="0" name="endSizeVariance" value="0">
+			</p>
+			<p>
+					<label>Position X:</label>
+					<input type="number" data-type="point" data-key="x" name="position" value="0">
+					, <label>Var:</label>
+					<input type="number" data-type="point" data-key="x" name="positionVariance" value="0">
+			</p>
+			<p>
+					<label>Position Y:</label>
+					<input type="number" data-type="point" data-key="y" name="position" value="0">
+					, <label>Var:</label>
+					<input type="number" data-type="point" data-key="y" name="positionVariance" value="0">
+			</p>
+			<h3>GRAVITY<!-- <a href="">(switch to Radius)</a>//--></h3>
+			<p>
+					<label>Speed:</label>
+					<input type="number" name="speed" value="0">
+					, <label>Var:</label>
+					<input type="number" name="speedVariance" value="0">
+			</p>
+			<p>
+					<label>Gravity X:</label>
+					<input type="number" data-type="point" data-key="x" name="gravity" value="0">
+					, <label>Y:</label>
+					<input type="number" data-type="point" data-key="y" name="gravity" value="0">
+			</p>
+			<p>
+					<label>Angle:</label>
+					<input type="number" name="angle" value="0">
+					, <label>Var:</label>
+					<input type="number" name="angleVariance" value="0">
+			</p>
+			<p>
+					<label>Radial Accel.:</label>
+					<input type="number" name="radialAcceleration" value="0">
+					, <label>Var:</label>
+					<input type="number" name="radialAccelerationVariance" value="0">
+			</p>
+			<p>
+					<label>Tang. Accel.:</label>
+					<input type="number" name="tangentialAcceleration" value="0">
+					, <label>Var:</label>
+					<input type="number" name="tangentialAccelerationVariance" value="0">
+			</p>
+			<h3>COLOR RANGE (0-1)</h3>
+			<p>
+					<label>Startcolor Red:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Green:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Blue:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Alpha:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Red:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Green:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Blue:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Alpha:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColorVariance" value="0">
+			</p>
+			<h3>BLENDING</h3>
+			<p>
+					<select name="blending">
+							<option value="NormalBlending">Normal</option>
+							<option value="AdditiveBlending">Additive</option>
+							<option value="SubtractiveBlending">Subtractive</option>
+							<option value="MultiplyBlending">Multiply</option>
+							<option value="AdditiveAlphaBlending">Additive Alpha</option>
+					</select>
+			</p>
+			<h4>PERMALINK</h4>
+			<p>
+					LONG:&nbsp;&nbsp;&nbsp;<input type="text" name="EXPORT_LONG" value="">
+			</p>
+			<p>
+					SHORT: <input type="text" name="EXPORT_SHORT" value="">
+					<input style="margin-left:45px; width:180px;" type="button" name="GENERATE_SHORT_URL" value="generate a short url">
+			</p>
+			<!--
+			<h4>IMPORT</h4>
+			<p>
+					<input type="text" name="IMPORT" value="">
+					<button name="IMPORT">OK</button>
+			</p>
+			//-->
+	</div>
 
-		<script type="text/javascript">
+<script src="../three.js/build/Three.js"></script>
+<script src="PSCParticleSystem.js"></script>
+<script src="PSCVertex.js"></script>
+
+<script src="../WebGestureRecognizers/onUserInteractionMove.js"></script>
+<script src="../three.js/examples/js/Detector.js"></script>
+<script src="../three.js/examples/js/RequestAnimationFrame.js"></script>
+<script src="../three.js/examples/js/Stats.js"></script>
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+	attribute float size;
+	attribute vec3 ca;
+
+	varying vec3 vColor;
+
+	void main() {
+
+		vColor = ca;
+
+		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+		//gl_PointSize = size;
+		gl_PointSize = size * ( 400.0 / length( mvPosition.xyz ) );
+
+		gl_Position = projectionMatrix * mvPosition;
+
+	}
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+	uniform vec3 color;
+	uniform sampler2D texture;
+
+	varying vec3 vColor;
+
+	void main() {
+
+		gl_FragColor = vec4( color * vColor, 1.0 );
+		gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+	}
+
+</script>
+
+<script type="text/javascript">
+
+	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+	var stats;
+	var CREATE_NEW_PARTICLE_SYSTEM = 1, USE_EXISTING_PARTICLE_SYSTEM = 2;
+	var camera, scene, renderer, parameters, i, particleSystem;
+	var configurator = Object.create(null);
+	var windowHalfX = window.innerWidth / 2;
+	var windowHalfY = window.innerHeight / 2;
+
+	// configurator
+	var predefinedConfigurations = {
+				'snow' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2.039,"lifespanVariance":2.171,"startSize":5,"startSizeVariance":10,"endSize":5,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":200,"y":10},"speed":0,"speedVariance":506.58,"startColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.19},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.24},"radialAcceleration":-30,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":239,"angleVariance":27,"gravity":{"x":0,"y":0},"intendedParticles":120},
+				
+				'blueGalaxy' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":15,"startSizeVariance":10,"endSize":15,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":0,"y":0},"speed":59,"speedVariance":10,"startColor":{"red":0.12,"green":0.25,"blue":0.76,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":1},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-20,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":150},
+				
+				'burner' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":"","startSize":44,"startSizeVariance":"","endSize":"","endSizeVariance":"","position":{"x":-310,"y":-300},"positionVariance":{"x":1000,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":90,"angleVariance":10,"gravity":{"x":0,"y":80},"intendedParticles":12000},
+				
+				'uxebu' : {"texture":"uxebu-logo","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":0,"startSize":80,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":40,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":100,"radialAccelerationVariance":100,"tangentialAcceleration":100,"tangentialAccelerationVariance":100,"angle":270,"angleVariance":90,"gravity":{"x":0,"y":-100},"intendedParticles":30},
+				
+				'glitterParty' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":0,"startSize":4,"startSizeVariance":32,"endSize":10,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":278,"y":3},"speed":21,"speedVariance":161,"startColor":{"red":0.17,"green":0.28,"blue":0.83,"alpha":0.33},"startColorVariance":{"red":0.69,"green":0.02,"blue":0.18,"alpha":0.23},"endColor":{"red":0.78,"green":0.16,"blue":0.16,"alpha":0.5},"endColorVariance":{"red":0.19,"green":0.07,"blue":0.04,"alpha":0.68},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":45,"angleVariance":67,"gravity":{"x":1.94,"y":0.91},"intendedParticles":300},
+				
+				'comet' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":2.171,"startSize":30,"startSizeVariance":0,"endSize":10,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":-4,"y":0},"speed":0,"speedVariance":203.95,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":47,"angleVariance":0,"gravity":{"x":-276.32,"y":355.26},"intendedParticles":250},
+				
+				'colorfulStars' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":1.513,"startSize":34,"startSizeVariance":24,"endSize":34,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":400,"y":0},"speed":59,"speedVariance":98.68,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0.5,"green":0.5,"blue":0.5,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0.3,"green":0.3,"blue":0.4,"alpha":1},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":284,"angleVariance":185,"gravity":{"x":0,"y":0},"intendedParticles":300},
+				
+				'waterFountain' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1.908,"lifespanVariance":0.855,"startSize":15,"startSizeVariance":5,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":7,"y":7},"speed":604,"speedVariance":30,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":15,"gravity":{"x":0,"y":-750},"intendedParticles":300},
+				
+				'somethingBlue' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0.5,"startSize":15,"startSizeVariance":10,"endSize":4,"endSizeVariance":10,"position":{"x":0,"y":0},"positionVariance":{"x":20,"y":15},"speed":300,"speedVariance":50,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":0},"intendedParticles":300},
+				
+				'smoke' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0.5,"startSize":20,"startSizeVariance":10,"endSize":14,"endSizeVariance":10,"position":{"x":0,"y":0},"positionVariance":{"x":20,"y":15},"speed":86,"speedVariance":50,"startColor":{"red":0.1,"green":0.1,"blue":0.1,"alpha":0.2},"startColorVariance":{"red":0.01,"green":0.01,"blue":0.01,"alpha":0.2},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":250},"intendedParticles":300}
+		};
+	
+	(function init(win, doc) {
+		var container = doc.getElementById('screen');
+
+		// Camera params:
+		// field of view, aspect ratio for render output, near and far clipping plane. 
+		camera = new THREE.PerspectiveCamera(90);
+		// move the camera backwards so we can see stuff!
+		camera.position.z = 300;
+
+		// the scene contains all the 3D object data
+		scene = new THREE.Scene();
+		//scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+
+		setConfig(predefinedConfigurations.burner);
+		newParticleSystem();
+
+		renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
+		renderer.setSize(win.innerWidth, win.innerHeight);
+
+		//master
+		//renderer.sortElements = false;
+
+		//dev
+		//renderer.autoClear = false;
+		//renderer.sortObjects = false;
+
+		//renderer.setClearColorHex( 0x000000, 0.25 );
+
+		container.appendChild(renderer.domElement);
+
+		/**
+			user interaction proxy (mouse/touch)
+			@dependencies container
+		*/
+		onUserInteractionMove(container, function(obj) {
+			var pos = obj.position.page;
+			console.log(JSON.stringify(pos));
+			configurator['position'] = {x:pos.x - 800, y:-1*pos.y + windowHalfY}; // what a stupid hack
+			particleSystem.liveUpdateConfig(configurator); // works just for position atm
+		});
+
+		/**
+			setup stats
+			@dependencies container
+		*/
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		container.appendChild( stats.domElement );
+
+	})(window, document);
+
+	function newParticleSystem() {
+
+		particleSystem && scene.remove(particleSystem);
+
+		var attributes = {
+			size: {	type: 'f', value: [] },
+			ca:   {	type: 'c', value: [] }
+		};
+
+		var uniforms = {
+			amplitude: { type: "f", value: 1.0 },
+			color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+			texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( 'textures/'+configurator.texture+'.png' ) },
+			transparent:{ type: "b", value: true},
+		};
+
+		uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
+
+		/** setup particles */
 		
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+		/*var material = new THREE.ParticleBasicMaterial({
+			color: 0xFFFFFF,
+			size: 290,
+			map: THREE.ImageUtils.loadTexture(configurator.texture),
+			blending: THREE[configurator.blending],
+			transparent: true,
+			vertexColors: true
+		});*/
 
-			var stats;
-			var camera, scene, renderer, parameters, i;
-			var configurator = Object.create(null);
-			
-			// configurator
-			configurator =  {"texture":"textures/test.png","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0,"startSize":44,"startSizeVariance":0,"endSize":5,"endSizeVariance":0,"position":{"x":425,"y":417},"positionVariance":{"x":5,"y":0},"speed":295,"speedVariance":30,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":10,"gravity":{"x":0,"y":50},"intendedParticles":2000};
-			/*configurator =  {"texture":"textures/test.png","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":30,"startSizeVariance":10,"endSize":40,"endSizeVariance":10,"position":{"x":425,"y":417},"positionVariance":{"x":0,"y":0},"speed":80,"speedVariance":10,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-60,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":2250};*/
-			
-			//var mouseX = 0, mouseY = 0;
+		var material = new THREE.ShaderMaterial( {
+			uniforms: uniforms,
+			attributes: attributes,
+			vertexShader: document.getElementById( 'vertexshader' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+			blending: THREE[configurator.blending],
+			depthTest: 		false,
+			transparent:	true
+		});
 
-			//var windowHalfX = window.innerWidth / 2;
-			//var windowHalfY = window.innerHeight / 2;
-			
-			(function setup(win, doc) {
-			
-				var container = doc.createElement('div');
-				doc.body.appendChild(container);
+		var particles = new THREE.Geometry();
+		
+		for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
+			particle = new PSCVertex(configurator);
+			particles.vertices[i] = particle;
+			//setup particle color
+			colors[i] = new THREE.Color();
+		}
+		particles.colors = colors;
+		
+		/** setup particle system */
+		particleSystem = new PSCParticleSystem(particles, material, configurator);
 
-				// Camera params:
-				// field of view, aspect ratio for render output, near and far clipping plane. 
-				camera = new THREE.PerspectiveCamera( 100, win.innerWidth / win.innerHeight, 1, 1000 );
-				// move the camera backwards so we can see stuff!
-				camera.position.z = 1000;
+		scene.add(particleSystem);
+	}
 
-				// the scene contains all the 3D object data
-				scene = new THREE.Scene();
-				//scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+	(function animate(timestamp) {
 
-				/** setup particles */
-				var particles = new THREE.Geometry();
-				var material = new THREE.ParticleBasicMaterial({
-					color: 0xFFFFFF,
-					size: 190,
-					map: THREE.ImageUtils.loadTexture(configurator.texture),
-					blending: THREE[configurator.blending],
-					transparent: true,
-					vertexColors: true
-				});
-
-				for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
-					particle = new PSCVertex(configurator);
-					particles.vertices[i] = particle;
-					//setup particle color
-					colors[i] = new THREE.Color();
-				}
-				particles.colors = colors;
-				
-				/** setup particle system */
-				var particleSystem = new PSCParticleSystem(particles, material, configurator);
-
-				scene.add(particleSystem);
-
-
-				renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
-				renderer.setSize( win.innerWidth, win.innerHeight );
-				container.appendChild(renderer.domElement);
-
-				/**
-				  setup stats
-				  @dependencies container
-				*/
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				container.appendChild( stats.domElement );
-
-				//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				//document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-				//document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
-			})(window, document);
-
-			/*function onDocumentMouseMove( event ) {
-
-				mouseX = event.clientX - windowHalfX;
-				mouseY = event.clientY - windowHalfY;
-
+		var sceneObjects = scene.objects;
+		var i = sceneObjects.length;
+		while(i-->0) {
+			if (sceneObjects[i] instanceof PSCParticleSystem) {
+				// refresh psc particle system
+				sceneObjects[i].refresh(timestamp);
+				//once_console("we're in");
 			}
+		}
 
-			function onDocumentTouchStart( event ) {
+		renderer.clear();
+		renderer.render( scene, camera );
+		stats.update();
+		requestAnimationFrame( animate );
 
-				if ( event.touches.length == 1 ) {
+		return;
 
-					event.preventDefault();
+	})(+new Date);
+	
+	/*function render(timestamp) {
+		//camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+		//camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+		//camera.lookAt( scene.position );
+	}*/
 
-					mouseX = event.touches[ 0 ].pageX - windowHalfX;
-					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+	var once = true;
+	function once_console(msg){
+		once && console.log("once: " + msg);
+		once = false;
+	}
 
-				}
+	// a lot of configuration stuff
+
+function setConfig(conf) {
+	for (var key in conf) {
+		updateConfig(key, conf[key], USE_EXISTING_PARTICLE_SYSTEM);
+	}
+}
+
+function updateConfig() {
+		
+	var key = arguments[0] || "";
+	var value = arguments[1] || "";
+	var createNewParticleSystemFlag = arguments[2] || CREATE_NEW_PARTICLE_SYSTEM;
+	
+	if (key.length) {
+			configurator[key] = value;
+	}
+	
+	// Point
+	if (value && typeof value.x === "number") {
+			document.querySelector('input[name='+key+'][data-key=x]').value = value.x;
+			document.querySelector('input[name='+key+'][data-key=y]').value = value.y;
+	}
+	
+	// Color
+	if (value && typeof value.red === "number") {
+			document.querySelector('input[name='+key+'][data-key=r]').value = value.red;
+			document.querySelector('input[name='+key+'][data-key=g]').value = value.green;
+			document.querySelector('input[name='+key+'][data-key=b]').value = value.blue;
+			document.querySelector('input[name='+key+'][data-key=a]').value = value.alpha;
+	}
+	
+	//numbers
+	if (value && typeof value === "number") {
+			var inputNumber = document.querySelector('input[name='+key+']');
+			if (inputNumber && inputNumber.value) {
+					inputNumber.value = value;
 			}
+	}
+	
+	// texture
+	if (value && key && key === 'texture') {
+			document.querySelector('select[name=texture]').selectedIndex = 
+			document.querySelector('select[name=texture]').querySelector('option[value='+value+']').index;
+	}
+	
+	// blending
+	if (key && key === 'blending') {
+			document.querySelector('select[name=blending]').selectedIndex = 
+			document.querySelector('select[name=blending]').querySelector('option[value='+value+']').index;
+	}
+	
+	document.querySelector('input[name=EXPORT_LONG]').value = "http://basecode.appspot.com/particlesjs#"+JSON.stringify(configurator);
+	
+	(createNewParticleSystemFlag === CREATE_NEW_PARTICLE_SYSTEM) && newParticleSystem();
+}
 
-			function onDocumentTouchMove( event ) {
-
-				if ( event.touches.length == 1 ) {
-
-					event.preventDefault();
-
-					mouseX = event.touches[ 0 ].pageX - windowHalfX;
-					mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-				}
-
-			}*/
-
-			//
-
-			(function animate(timestamp) {
-				var sceneObjects = scene.objects;
-				var i = sceneObjects.length;
-				while(i-->0) {
-					if (sceneObjects[i] instanceof PSCParticleSystem) {
-						// refresh psc particle system
-						once_console("we're in");
-						sceneObjects[i].refresh(timestamp);
-					}
-				}
-
-				renderer.clear();
-				renderer.render( scene, camera );
-				stats.update();
-				requestAnimationFrame( animate );
-
-				return;
-
-				var particleSystem = scene.objects[0];
-				var config = particleSystem.config;
-				var particles      = particleSystem.geometry;
-				var delta          = (timestamp - particleSystem.lastTimestamp) / 1000;
+// configurator: handle ui input-element changes
+for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
+		els[i].addEventListener("input", function handleUIInputElementChanges(e) {
+				var t = e.target;
+				console.log(t.type, t.name, t.value);
 				
-				particleSystem.lastTimestamp = timestamp;
-
-				var rate = 1.0 / particleSystem.emissionRate;
-				particleSystem.emitCounter += delta;
-				var particle, i = 0;
-				while( particleSystem.particleCount < config.intendedParticles && particleSystem.emitCounter > rate ) {
-					particle = particles.vertices[i++];
-					if (particle.isHidden()) {
-						particle.init(config);
-						particleSystem.particleCount += 1;
-						particleSystem.emitCounter -= rate;
-					}
-				}
-
-				//elapsed += delta;
-				//if(duration != -1 && duration < elapsed)
-				//[self stopSystem];
-
-				var i = 0, counter = particleSystem.particleCount;
-				while(counter--) {
-					// update particle
-					var particle = particles.vertices[i++];
-					
-					if (particle.isHidden()) {
-						continue;
-					}
-					
-					var particleColor = particle.color;
-					var geometryColor = particles.colors[counter];
-					//particle.position.addSelf({x:2,y:0});
-					particle.update(delta);
-					
-					geometryColor.setRGB( particleColor.r, particleColor.g, particleColor.b );
+				// Points
+				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
+						var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
+						var y = +document.querySelector('input[name='+t.name+'][data-key=y]').value;
+						updateConfig(t.name, {x : x, y : y});
+						return;
 				}
 				
-				// flag to the particle system that we've
-				// changed its vertices. This is the
-				// dirty little secret.
-				particleSystem.geometry.__dirtyVertices = true;
+				// Colors
+				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
+						var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
+						var g = +document.querySelector('input[name='+t.name+'][data-key=g]').value;
+						var b = +document.querySelector('input[name='+t.name+'][data-key=b]').value;
+						var a = +document.querySelector('input[name='+t.name+'][data-key=a]').value;
+						updateConfig(t.name, {red : r, green : g, blue : b, alpha : a});
+						return;
+				}
+						
+				//numbers
+				if (t.type === 'number') {
+						updateConfig(t.name, +t.value);
+				}
+		}, false);
+};
+
+// configurator: handle ui select-box changes
+for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
+		els[i].addEventListener("change", function handleUISelectBoxChanges(e) {
 				
-				// and render the scene from the perspective of the camera
+				var t = e.target;
 				
+				// predefined configurations
+				if (t.name === "PREDEFINED_CONFIGURATIONS" && predefinedConfigurations[t.value]) {
+						setConfig(predefinedConfigurations[t.value]);
+						newParticleSystem();
+						return;
+				}
 
-			})(+new Date);
-			
-			/*function render(timestamp) {
-				//camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-				//camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-				//camera.lookAt( scene.position );
-			}*/
+				updateConfig(t.name, t.value, USE_EXISTING_PARTICLE_SYSTEM);
+				newParticleSystem();
 
-			var once = true;
-			function once_console(msg){
-				once && console.log("once: " + msg);
-				once = false;
-			}
-
-
-		</script>
+		}, false);
+};
+</script>
 	</body>
 </html>
