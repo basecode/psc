@@ -1,91 +1,610 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset='utf-8'>
+<html lang="en">
+	<head>
+		<title>three.js webgl - particles configurator</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				text-align:center;
+				font-family:arial;
+				font-size:11px;
+			}
 
-  <title>basecode/psc @ GitHub</title>
+			a {
+				color:#0078ff;
+			}
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #918ffa;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #6e7005; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #6e7005; }
-    h3 { text-align: center; color: #6e7005; }
-    a { color: #6e7005; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
-</head>
+			#screen, #info {
+				overflow:hidden;
+				position:fixed;
+			}
 
-<body>
-  <a href="https://github.com/basecode/psc"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+			#info {
+				color: #fff;
+				font-weight: bold;
+				font-size:13px;
+				font-family:Monospace;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index: 100;
+			}
 
-  <div id="container">
+			.configPanel { 
+				position:absolute;
+				right:0;
+				top:0;
+				width:250px;
+				padding:5px 10px;
+				background-color:#ddd;
+				border: 2px solid #222;
+				display: block;
+				margin: auto;
+				z-index:100;
+				text-align:left;
+			}
+			h3 {
+				background-color:#d0a251;
+				border-bottom:1px solid #b2841f;
+				text-shadow: 1px 1px 0px #c09348;
+				letter-spacing: 1px;
+				margin:0;
+				font-size:1em;
+				text-align:center;
+				padding:3px 0;
+				color:#52120d;
+			}
+			h4 {
+				background-color:#52120d;
+				border-bottom:1px solid #ce2b14;
+				text-shadow: 1px 1px 0px #000;
+				letter-spacing: 1px;
+				margin:0;
+				text-align:center;
+				padding:5px 0;
+				color:#f3f3f3;
+			}
+			p {
+				padding:5px;
+				background-color:#E8E8E8;
+				border-bottom:1px solid #ccc;
+				margin:2px 0;
+			}
+			label {
+				padding-right:5px;
+			}
+			input {
+				width:45px;
+			}
+			input[name=EXPORT_LONG], input[name=EXPORT_SHORT], input[name=IMPORT] {
+				width:170px;
+			}
 
-    <div class="download">
-      <a href="https://github.com/basecode/psc/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/basecode/psc/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-    </div>
+		</style>
+	</head>
+	<body>
+    <div id="info">
+		  <a href="http://github.com/mrdoob/three.js" target="_blank">three.js</a>
+      - webgl particle system configurator by
+      <a href="http://twitter.com/basecode">basecode</a>
+		</div>
 
-    <h1><a href="https://github.com/basecode/psc">psc</a>
-      <span class="small">by <a href="https://github.com/basecode">basecode</a></span></h1>
+		<div id="screen"></div>
 
-    <div class="description">
-      Particle System Configurator
-    </div>
+		<div class="configPanel">
+			<h4>PREDEFINED CONFIGURATIONS</h4>
+			<p>
+					<select name="PREDEFINED_CONFIGURATIONS">
+							<option value="burner">Burner</option>
+							<option value="glitterParty">Glitter Party</option>
+							<option value="blueGalaxy">Blue Galaxy</option>
+							<option value="snow">Snow</option>
+							<option value="somethingBlue">Something Blue</option>
+							<option value="comet">Comet</option>
+							<option value="colorfulSnow">Colorful Snow</option>
+							<option value="waterFountain">Water Fountain</option>
+							<option value="smoke">Smoke</option>
+							<option value="uxebu">uxebu</option>
+					</select>
+			</p>
+			<h4>PARTICLE CONFIGURATOR</h4>
+			<p>
+					<label>Particles:</label>
+					<input type="number" min="0" name="intendedParticles" value="5" style="width:55px;">
+			</p>
+			<p>
+					<label>Texture:</label>
+					<select name="texture">
+							<option value="fire">Fire</option>
+							<option value="smoke">Smoke</option>
+							<option value="snow">Snow</option>
+							<option value="avatar">basecode</option>
+							<option value="uxebu-logo">uxebu</option>
+					</select>
+			</p>
+			<p>
+					<label>Lifespan:</label>
+					<input type="number" min="0" name="lifespan" value="2">
+					, <label>Var:</label>
+					<input type="number" min="0" name="lifespanVariance" value="0">
+			</p>
+			<p>
+					<label>Startsize:</label>
+					<input type="number" min="0" name="startSize" value="20">
+					, <label class="two">Var:</label>
+					<input type="number" min="0" name="startSizeVariance" value="0">
+			</p>
+			<p>
+					<label>Endsize:</label>
+					<input type="number" min="0" name="endSize" value="5">
+					, <label>Var:</label>
+					<input type="number" min="0" name="endSizeVariance" value="0">
+			</p>
+			<p>
+					<label>Position X:</label>
+					<input type="number" data-type="point" data-key="x" name="position" value="0">
+					, <label>Var:</label>
+					<input type="number" data-type="point" data-key="x" name="positionVariance" value="0">
+			</p>
+			<p>
+					<label>Position Y:</label>
+					<input type="number" data-type="point" data-key="y" name="position" value="0">
+					, <label>Var:</label>
+					<input type="number" data-type="point" data-key="y" name="positionVariance" value="0">
+			</p>
+			<h3>GRAVITY<!-- <a href="">(switch to Radius)</a>//--></h3>
+			<p>
+					<label>Speed:</label>
+					<input type="number" name="speed" value="0">
+					, <label>Var:</label>
+					<input type="number" name="speedVariance" value="0">
+			</p>
+			<p>
+					<label>Gravity X:</label>
+					<input type="number" data-type="point" data-key="x" name="gravity" value="0">
+					, <label>Y:</label>
+					<input type="number" data-type="point" data-key="y" name="gravity" value="0">
+			</p>
+			<p>
+					<label>Angle:</label>
+					<input type="number" name="angle" value="0">
+					, <label>Var:</label>
+					<input type="number" name="angleVariance" value="0">
+			</p>
+			<p>
+					<label>Radial Accel.:</label>
+					<input type="number" name="radialAcceleration" value="0">
+					, <label>Var:</label>
+					<input type="number" name="radialAccelerationVariance" value="0">
+			</p>
+			<p>
+					<label>Tang. Accel.:</label>
+					<input type="number" name="tangentialAcceleration" value="0">
+					, <label>Var:</label>
+					<input type="number" name="tangentialAccelerationVariance" value="0">
+			</p>
+			<h3>COLOR RANGE (0-1)</h3>
+			<p>
+					<label>Startcolor Red:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Green:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Blue:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Startcolor Alpha:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="startColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Red:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="r" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Green:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="g" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Blue:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="b" name="endColorVariance" value="0">
+			</p>
+			<p>
+					<label>Endcolor Alpha:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColor" value="0">
+					, <label>Var:</label>
+					<input type="number" min="0" max="1" step="0.1" data-type="color" data-key="a" name="endColorVariance" value="0">
+			</p>
+			<h3>BLENDING</h3>
+			<p>
+					<select name="blending">
+							<option value="NormalBlending">Normal</option>
+							<option value="AdditiveBlending">Additive</option>
+							<option value="SubtractiveBlending">Subtractive</option>
+							<option value="MultiplyBlending">Multiply</option>
+							<option value="AdditiveAlphaBlending">Additive Alpha</option>
+					</select>
+			</p>
+			<h4>PERMALINK</h4>
+			<p>
+					LONG:&nbsp;&nbsp;&nbsp;<input type="text" name="EXPORT_LONG" value="">
+			</p>
+			<p>
+					SHORT: <input type="text" name="EXPORT_SHORT" value="">
+					<input style="margin-left:45px; width:180px;" type="button" name="GENERATE_SHORT_URL" value="generate a short url">
+			</p>
+			<!--
+			<h4>IMPORT</h4>
+			<p>
+					<input type="text" name="IMPORT" value="">
+					<button name="IMPORT">OK</button>
+			</p>
+			//-->
+	</div>
 
-    
+<script src="three.js/build/Three.js"></script>
+<script src="PSCParticleSystem.js"></script>
+<script src="PSCVertex.js"></script>
 
-    
+<script src="WebGestureRecognizers/onUserInteractionMove.js"></script>
+<script src="three.js/examples/js/Detector.js"></script>
+<script src="three.js/examples/js/RequestAnimationFrame.js"></script>
+<script src="three.js/examples/js/Stats.js"></script>
 
-    
+<script type="x-shader/x-vertex" id="vertexshader">
 
-    
+	attribute float size;
+	attribute vec3 ca;
 
-    
+	varying vec3 vColor;
 
-    
+	void main() {
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/basecode/psc/zipball/master">zip</a> or
-      <a href="https://github.com/basecode/psc/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/basecode/psc</pre>
-    </p>
+		vColor = ca;
 
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/basecode/psc">basecode/psc</a>
-    </div>
+		vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 
-  </div>
+		//gl_PointSize = size;
+		gl_PointSize = size * ( 400.0 / length( mvPosition.xyz ) );
 
-<script type=\"text/javascript\">
-var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");
-document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));
+		gl_Position = projectionMatrix * mvPosition;
+
+	}
+
 </script>
-<script type=\"text/javascript\">
-try {
-var pageTracker = _gat._getTracker("UA-24324453-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>"
-</body>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+	uniform vec3 color;
+	uniform sampler2D texture;
+
+	varying vec3 vColor;
+
+	void main() {
+
+		gl_FragColor = vec4( color * vColor, 1.0 );
+		gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );
+
+	}
+
+</script>
+
+<script type="text/javascript">
+
+	if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+	var stats;
+	var CREATE_NEW_PARTICLE_SYSTEM = 1, USE_EXISTING_PARTICLE_SYSTEM = 2;
+	var camera, scene, renderer, parameters, i, particleSystem;
+	var configurator = Object.create(null);
+	var windowHalfX = window.innerWidth / 2;
+	var windowHalfY = window.innerHeight / 2;
+
+	// configurator
+	var predefinedConfigurations = {
+				'snow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2.039,"lifespanVariance":2.171,"startSize":5,"startSizeVariance":10,"endSize":5,"endSizeVariance":"","position":{"x":-433,"y":302},"positionVariance":{"x":800,"y":10},"speed":"","speedVariance":506.58,"startColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.19},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.24},"radialAcceleration":-30,"radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":239,"angleVariance":27,"gravity":{"x":0,"y":0},"intendedParticles":1200},
+				
+				'blueGalaxy' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":15,"startSizeVariance":10,"endSize":15,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":0,"y":0},"speed":59,"speedVariance":10,"startColor":{"red":0.12,"green":0.25,"blue":0.76,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":1},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-20,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":8000},
+				
+				'burner' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":"","startSize":44,"startSizeVariance":"","endSize":"","endSizeVariance":"","position":{"x":-310,"y":-300},"positionVariance":{"x":1000,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":90,"angleVariance":10,"gravity":{"x":0,"y":80},"intendedParticles":10000},
+				
+				'uxebu' : {"texture":"uxebu-logo","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":0,"startSize":80,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":40,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":100,"radialAccelerationVariance":100,"tangentialAcceleration":100,"tangentialAccelerationVariance":100,"angle":270,"angleVariance":90,"gravity":{"x":0,"y":-100},"intendedParticles":30},
+				
+				'glitterParty' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":"","startSize":10,"startSizeVariance":32,"endSize":10,"endSizeVariance":10,"position":{"x":-244,"y":-21},"positionVariance":{"x":400,"y":50},"speed":21,"speedVariance":10,"startColor":{"red":0.17,"green":0.28,"blue":0.83,"alpha":0.33},"startColorVariance":{"red":0.69,"green":0.02,"blue":0.18,"alpha":0.23},"endColor":{"red":0.78,"green":0.16,"blue":0.16,"alpha":0.5},"endColorVariance":{"red":0.19,"green":0.07,"blue":0.04,"alpha":0.68},"radialAcceleration":"","radialAccelerationVariance":30,"tangentialAcceleration":"","tangentialAccelerationVariance":20,"angle":"","angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":3000},
+				
+				'comet' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":2.171,"startSize":20,"startSizeVariance":"","endSize":10,"endSizeVariance":"","position":{"x":-33,"y":-47},"positionVariance":{"x":10,"y":10},"speed":"","speedVariance":20,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"radialAcceleration":-100,"radialAccelerationVariance":200,"tangentialAcceleration":-100,"tangentialAccelerationVariance":200,"angle":90,"angleVariance":360,"gravity":{"x":-200,"y":400},"intendedParticles":2250},
+				
+				'colorfulSnow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":1.513,"startSize":34,"startSizeVariance":24,"endSize":34,"endSizeVariance":"","position":{"x":-199,"y":9},"positionVariance":{"x":400,"y":0},"speed":59,"speedVariance":98.68,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0.5,"green":0.5,"blue":0.5,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0.3,"green":0.3,"blue":0.4,"alpha":1},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":284,"angleVariance":185,"gravity":{"x":0,"y":0},"intendedParticles":1000},
+				
+				'waterFountain' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1.908,"lifespanVariance":0.855,"startSize":15,"startSizeVariance":5,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":7,"y":7},"speed":604,"speedVariance":30,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":15,"gravity":{"x":0,"y":-750},"intendedParticles":300},
+				
+				'somethingBlue' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0.5,"startSize":15,"startSizeVariance":10,"endSize":4,"endSizeVariance":10,"position":{"x":0,"y":0},"positionVariance":{"x":20,"y":15},"speed":300,"speedVariance":50,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":0},"intendedParticles":300},
+				
+				'smoke' : {"texture":"smoke","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":5,"lifespanVariance":0.5,"startSize":20,"startSizeVariance":10,"endSize":14,"endSizeVariance":10,"position":{"x":-90,"y":-104},"positionVariance":{"x":10,"y":30},"speed":"","speedVariance":"","startColor":{"red":0.1,"green":0.1,"blue":0.1,"alpha":0.2},"startColorVariance":{"red":0.01,"green":0.01,"blue":0.01,"alpha":0.2},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":-10,"tangentialAccelerationVariance":20,"angle":90,"angleVariance":360,"gravity":{"x":5,"y":50},"intendedParticles":3000}
+		};
+	
+	(function init(win, doc) {
+		var container = doc.getElementById('screen');
+
+		// Camera params:
+		// field of view, aspect ratio for render output, near and far clipping plane. 
+		camera = new THREE.PerspectiveCamera(90);
+		// move the camera backwards so we can see stuff!
+		camera.position.z = 300;
+
+		// the scene contains all the 3D object data
+		scene = new THREE.Scene();
+		//scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
+
+		setConfig(predefinedConfigurations.burner);
+		newParticleSystem();
+
+		renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
+		renderer.setSize(win.innerWidth, win.innerHeight);
+
+		//master
+		//renderer.sortElements = false;
+
+		//dev
+		//renderer.autoClear = false;
+		//renderer.sortObjects = false;
+
+		//renderer.setClearColorHex( 0x000000, 0.25 );
+
+		container.appendChild(renderer.domElement);
+
+		/**
+			user interaction proxy (mouse/touch)
+			@dependencies container
+		*/
+		onUserInteractionMove(container, function(obj) {
+			var pos = obj.position.page;
+			var newPos = {x:pos.x - windowHalfX, y:-1*pos.y + windowHalfY};
+			updateConfig('position', newPos, USE_EXISTING_PARTICLE_SYSTEM);
+			particleSystem.liveConfigUpdate(configurator);
+			
+		});
+
+		/**
+			setup stats
+			@dependencies container
+		*/
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		container.appendChild( stats.domElement );
+
+	})(window, document);
+
+	function newParticleSystem() {
+
+		particleSystem && scene.remove(particleSystem);
+
+		var attributes = {
+			size: {	type: 'f', value: [] },
+			ca:   {	type: 'c', value: [] }
+		};
+
+		var uniforms = {
+			amplitude: { type: "f", value: 1.0 },
+			color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+			texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( 'textures/'+configurator.texture+'.png' ) },
+			transparent:{ type: "b", value: true},
+		};
+
+		uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
+
+		/** setup particles */
+		
+		/*var material = new THREE.ParticleBasicMaterial({
+			color: 0xFFFFFF,
+			size: 290,
+			map: THREE.ImageUtils.loadTexture(configurator.texture),
+			blending: THREE[configurator.blending],
+			transparent: true,
+			vertexColors: true
+		});*/
+
+		var material = new THREE.ShaderMaterial( {
+			uniforms: uniforms,
+			attributes: attributes,
+			vertexShader: document.getElementById( 'vertexshader' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+			blending: THREE[configurator.blending],
+			depthTest: 		false,
+			transparent:	true
+		});
+
+		var particles = new THREE.Geometry();
+		
+		for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
+			particle = new PSCVertex(configurator);
+			particles.vertices[i] = particle;
+			//setup particle color
+			colors[i] = new THREE.Color();
+		}
+		particles.colors = colors;
+		
+		/** setup particle system */
+		particleSystem = new PSCParticleSystem(particles, material, configurator);
+
+		scene.add(particleSystem);
+	}
+
+	(function animate(timestamp) {
+
+		var sceneObjects = scene.objects;
+		var i = sceneObjects.length;
+		while(i-->0) {
+			if (sceneObjects[i] instanceof PSCParticleSystem) {
+				// refresh psc particle system
+				sceneObjects[i].refresh(timestamp);
+				//once_console("we're in");
+			}
+		}
+
+		renderer.clear();
+		renderer.render( scene, camera );
+		stats.update();
+		requestAnimationFrame( animate );
+
+		return;
+
+	})(+new Date);
+	
+	/*function render(timestamp) {
+		//camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+		//camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+		//camera.lookAt( scene.position );
+	}*/
+
+	var once = true;
+	function once_console(msg){
+		once && console.log("once: " + msg);
+		once = false;
+	}
+
+	// a lot of configuration stuff
+
+function setConfig(conf) {
+	for (var key in conf) {
+		updateConfig(key, conf[key], USE_EXISTING_PARTICLE_SYSTEM);
+	}
+}
+
+function updateConfig() {
+		
+	var key = arguments[0] || "";
+	var value = arguments[1] || "";
+	var createNewParticleSystemFlag = arguments[2] || CREATE_NEW_PARTICLE_SYSTEM;
+	
+	if (key.length) {
+			configurator[key] = value;
+	}
+	
+	// Point
+	if (value && typeof value.x === "number") {
+			document.querySelector('input[name='+key+'][data-key=x]').value = value.x;
+			document.querySelector('input[name='+key+'][data-key=y]').value = value.y;
+	}
+	
+	// Color
+	if (value && typeof value.red === "number") {
+			document.querySelector('input[name='+key+'][data-key=r]').value = value.red;
+			document.querySelector('input[name='+key+'][data-key=g]').value = value.green;
+			document.querySelector('input[name='+key+'][data-key=b]').value = value.blue;
+			document.querySelector('input[name='+key+'][data-key=a]').value = value.alpha;
+	}
+	
+	//numbers
+	if (value && typeof value === "number") {
+			var inputNumber = document.querySelector('input[name='+key+']');
+			if (inputNumber && inputNumber.value) {
+					inputNumber.value = value;
+			}
+	}
+	
+	// texture
+	if (value && key && key === 'texture') {
+			document.querySelector('select[name=texture]').selectedIndex = 
+			document.querySelector('select[name=texture]').querySelector('option[value='+value+']').index;
+	}
+	
+	// blending
+	if (key && key === 'blending') {
+			document.querySelector('select[name=blending]').selectedIndex = 
+			document.querySelector('select[name=blending]').querySelector('option[value='+value+']').index;
+	}
+	
+	document.querySelector('input[name=EXPORT_LONG]').value = "http://basecode.appspot.com/particlesjs#"+JSON.stringify(configurator);
+	
+	(createNewParticleSystemFlag === CREATE_NEW_PARTICLE_SYSTEM) && newParticleSystem();
+}
+
+// configurator: handle ui input-element changes
+for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
+		els[i].addEventListener("input", function handleUIInputElementChanges(e) {
+				var t = e.target;
+				console.log(t.type, t.name, t.value);
+				
+				// Points
+				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
+						var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
+						var y = +document.querySelector('input[name='+t.name+'][data-key=y]').value;
+						updateConfig(t.name, {x : x, y : y});
+						return;
+				}
+				
+				// Colors
+				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
+						var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
+						var g = +document.querySelector('input[name='+t.name+'][data-key=g]').value;
+						var b = +document.querySelector('input[name='+t.name+'][data-key=b]').value;
+						var a = +document.querySelector('input[name='+t.name+'][data-key=a]').value;
+						updateConfig(t.name, {red : r, green : g, blue : b, alpha : a});
+						return;
+				}
+						
+				//numbers
+				if (t.type === 'number') {
+						updateConfig(t.name, +t.value);
+				}
+		}, false);
+};
+
+// configurator: handle ui select-box changes
+for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
+		els[i].addEventListener("change", function handleUISelectBoxChanges(e) {
+				
+				var t = e.target;
+				
+				// predefined configurations
+				if (t.name === "PREDEFINED_CONFIGURATIONS" && predefinedConfigurations[t.value]) {
+						setConfig(predefinedConfigurations[t.value]);
+						newParticleSystem();
+						return;
+				}
+
+				updateConfig(t.name, t.value, USE_EXISTING_PARTICLE_SYSTEM);
+				newParticleSystem();
+
+		}, false);
+};
+</script>
+
+<script type="text/javascript">
+if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+		//google analytics
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-24324453-1']);
+		_gaq.push(['_trackPageview']);
+		
+		(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+}
+</script>
+
+	</body>
 </html>
