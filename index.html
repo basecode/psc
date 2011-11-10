@@ -319,27 +319,61 @@
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
 
+	// import config file from document.location.hash
+	(function(hash) {
+			hash = hash && hash.length > 10 && unescape(hash.substr(1));
+			if (hash) {
+					try {
+							setConfig(JSON.parse(hash));
+					} catch(e){
+							alert("sorry, but this isn't a valid configuration.");
+					}
+			}
+	})(document.location.hash);
+
+	// CORS workaround, see: https://github.com/mrdoob/three.js/issues/687
+	(function(w, aImage, aContext) {
+		var loaded = function() {
+			aContext.canvas.width = aImage.width;
+			aContext.canvas.height = aImage.height;
+			aContext.drawImage(aImage, 0, 0);
+			aImage.callback(aContext.canvas);
+		}
+		var base64FromImageId = {
+			'fire' : 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAAK/INwWK6QAAAy1JREFUWAnF1+dSW0EQhFHjnP3+r+mc8RyhTywKCPOHqZq6e/fOdveEFcXF5eXlo4e0p/cgfzFnHo9fbF0G/O/4j/H/sos7VgDps3GC+ZPxfQF/Zu/31n/N805izlXg+QBxAlonoiqUfeQ/J5YT3HqWx+02AS/nSP5q1kQkZK0CAWWPUOb82/j3cUI9j9opAQj568W9E0TEKQGIkSGvZVXK3oEdE4AE2Zvxt1u3JsZ+VWgOqkDZIxJDQDGz3AzqQSX2BegzAciQvx9/t10nwveyM4gE6L/BQ/B1HA5s2bPmxE0hdGfnBCAnghNE2DkBZR850maE0JMCHOT1vhasAuzVBlWoAl075V8zR151xOS7K7pWAGBXbl+E7NdW+C5WlpW1wVszR9hsaI8zeI4KICYBDWK3oGp8mBhC7KtWAgDqfQmV+XorxMMvZpbXLz76sIqwR0hiiEBOhIrYN+X6KzuZsUqOXAyclRyH900VUiMTYIlICFDuQG3pdqiCOISyZ0pOTO1wtqzDxlObNgDzvvtdT4igVVBAhMgKuWrYR8r0ukztr4Thwe9vyCyvlbR529PhBAJHoi2RldlKchveHL0W4IfinBss3p2W+ZdxT22wX8w5LN83JhPWgQiARdRQrdepnjvfDOi9wRKXqISFBz+uWV71yTNiB/KAgAE2WIiVnPmu7MCRfx73XZx457i4MBOEb2NVwAFTLsAB7xzwOtXFAzZw+g1MLPJP49pCRGfDWoXY21iAXlbySIEiEoeMifPd9UoAcKTIVcLT2SoiHmkiZnllq4DKJRDYeqUil60437XClOupvc4lYhUiPgFid7YKEAA08K7XSi774pxNgH3AMpU18o/bZ9VIhPM7WwXYVCIg9rvXs9z0uSz9ECXulICqYCYaTrjwb9gxATLmwJmyNx9Aag2BCXATgMtOpqqQiP8SMOc2FYhcf4GXPfCGcl9A7SEyEfuDOJ9u2n4F+goAednX37KvRWsFqpIqVAli8lke2ikBIh1cBbh261+22rQKTUTt8Dzo++zt7MH/M7qrgJ3iWWhD2deCqnDjiq2HTq3vI+AU1r32ZfKg9g+4IXKJrhPF1wAAAABJRU5ErkJggg=='
+		}
+		w.makeOrigin = function(imageId, callback) {
+			if (imageId in base64FromImageId) {
+				aImage.src = 'data:image/png;base64,' + base64FromImageId[imageId];
+			} else {
+				aImage.src = 'textures/' + imageId + '.png';
+			}
+			aImage.callback = callback;
+			(aImage.complete) ? loaded() : aImage.onload = loaded;
+		}
+	})(window, new Image(), document.createElement('canvas').getContext('2d'));
+
 	// configurator
 	var predefinedConfigurations = {
-				'snow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2.039,"lifespanVariance":2.171,"startSize":5,"startSizeVariance":10,"endSize":5,"endSizeVariance":"","position":{"x":-433,"y":302},"positionVariance":{"x":800,"y":10},"speed":"","speedVariance":506.58,"startColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.19},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.24},"radialAcceleration":-30,"radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":239,"angleVariance":27,"gravity":{"x":0,"y":0},"intendedParticles":1200},
-				
-				'blueGalaxy' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":15,"startSizeVariance":10,"endSize":15,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":0,"y":0},"speed":59,"speedVariance":10,"startColor":{"red":0.12,"green":0.25,"blue":0.76,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":1},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-20,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":8000},
-				
-				'burner' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":"","startSize":44,"startSizeVariance":"","endSize":"","endSizeVariance":"","position":{"x":-310,"y":-300},"positionVariance":{"x":1000,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":90,"angleVariance":10,"gravity":{"x":0,"y":80},"intendedParticles":10000},
-				
-				'uxebu' : {"texture":"uxebu-logo","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":0,"startSize":80,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":40,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":100,"radialAccelerationVariance":100,"tangentialAcceleration":100,"tangentialAccelerationVariance":100,"angle":270,"angleVariance":90,"gravity":{"x":0,"y":-100},"intendedParticles":30},
-				
-				'glitterParty' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":"","startSize":10,"startSizeVariance":32,"endSize":10,"endSizeVariance":10,"position":{"x":-244,"y":-21},"positionVariance":{"x":400,"y":50},"speed":21,"speedVariance":10,"startColor":{"red":0.17,"green":0.28,"blue":0.83,"alpha":0.33},"startColorVariance":{"red":0.69,"green":0.02,"blue":0.18,"alpha":0.23},"endColor":{"red":0.78,"green":0.16,"blue":0.16,"alpha":0.5},"endColorVariance":{"red":0.19,"green":0.07,"blue":0.04,"alpha":0.68},"radialAcceleration":"","radialAccelerationVariance":30,"tangentialAcceleration":"","tangentialAccelerationVariance":20,"angle":"","angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":3000},
-				
-				'comet' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":2.171,"startSize":20,"startSizeVariance":"","endSize":10,"endSizeVariance":"","position":{"x":-33,"y":-47},"positionVariance":{"x":10,"y":10},"speed":"","speedVariance":20,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"radialAcceleration":-100,"radialAccelerationVariance":200,"tangentialAcceleration":-100,"tangentialAccelerationVariance":200,"angle":90,"angleVariance":360,"gravity":{"x":-200,"y":400},"intendedParticles":2250},
-				
-				'colorfulSnow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":1.513,"startSize":34,"startSizeVariance":24,"endSize":34,"endSizeVariance":"","position":{"x":-199,"y":9},"positionVariance":{"x":400,"y":0},"speed":59,"speedVariance":98.68,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0.5,"green":0.5,"blue":0.5,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0.3,"green":0.3,"blue":0.4,"alpha":1},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":284,"angleVariance":185,"gravity":{"x":0,"y":0},"intendedParticles":1000},
-				
-				'waterFountain' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1.908,"lifespanVariance":0.855,"startSize":15,"startSizeVariance":5,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":7,"y":7},"speed":604,"speedVariance":30,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":15,"gravity":{"x":0,"y":-750},"intendedParticles":300},
-				
-				'somethingBlue' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0.5,"startSize":15,"startSizeVariance":10,"endSize":4,"endSizeVariance":10,"position":{"x":0,"y":0},"positionVariance":{"x":20,"y":15},"speed":300,"speedVariance":50,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":0},"intendedParticles":300},
-				
-				'smoke' : {"texture":"smoke","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":5,"lifespanVariance":0.5,"startSize":20,"startSizeVariance":10,"endSize":14,"endSizeVariance":10,"position":{"x":-90,"y":-104},"positionVariance":{"x":10,"y":30},"speed":"","speedVariance":"","startColor":{"red":0.1,"green":0.1,"blue":0.1,"alpha":0.2},"startColorVariance":{"red":0.01,"green":0.01,"blue":0.01,"alpha":0.2},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":-10,"tangentialAccelerationVariance":20,"angle":90,"angleVariance":360,"gravity":{"x":5,"y":50},"intendedParticles":3000}
+		'snow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2.039,"lifespanVariance":2.171,"startSize":5,"startSizeVariance":10,"endSize":5,"endSizeVariance":"","position":{"x":-433,"y":302},"positionVariance":{"x":800,"y":10},"speed":"","speedVariance":506.58,"startColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.19},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0.24},"radialAcceleration":-30,"radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":239,"angleVariance":27,"gravity":{"x":0,"y":0},"intendedParticles":1200},
+		
+		'blueGalaxy' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":4,"lifespanVariance":1,"startSize":15,"startSizeVariance":10,"endSize":15,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":0,"y":0},"speed":59,"speedVariance":10,"startColor":{"red":0.12,"green":0.25,"blue":0.76,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":1},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":-20,"radialAccelerationVariance":0,"tangentialAcceleration":15,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":8000},
+		
+		'burner' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":"","startSize":44,"startSizeVariance":"","endSize":"","endSizeVariance":"","position":{"x":-310,"y":-300},"positionVariance":{"x":1000,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":1,"green":0.18,"blue":0,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":90,"angleVariance":10,"gravity":{"x":0,"y":80},"intendedParticles":10000},
+		
+		'uxebu' : {"texture":"uxebu-logo","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":0,"startSize":80,"startSizeVariance":0,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":40,"y":0},"speed":50,"speedVariance":50,"startColor":{"red":1,"green":0.18,"blue":0,"alpha":0.62},"startColorVariance":{"red":0,"green":0.3,"blue":0,"alpha":0},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":100,"radialAccelerationVariance":100,"tangentialAcceleration":100,"tangentialAccelerationVariance":100,"angle":270,"angleVariance":90,"gravity":{"x":0,"y":-100},"intendedParticles":30},
+		
+		'glitterParty' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":3,"lifespanVariance":"","startSize":10,"startSizeVariance":32,"endSize":10,"endSizeVariance":10,"position":{"x":-244,"y":-21},"positionVariance":{"x":400,"y":50},"speed":21,"speedVariance":10,"startColor":{"red":0.17,"green":0.28,"blue":0.83,"alpha":0.33},"startColorVariance":{"red":0.69,"green":0.02,"blue":0.18,"alpha":0.23},"endColor":{"red":0.78,"green":0.16,"blue":0.16,"alpha":0.5},"endColorVariance":{"red":0.19,"green":0.07,"blue":0.04,"alpha":0.68},"radialAcceleration":"","radialAccelerationVariance":30,"tangentialAcceleration":"","tangentialAccelerationVariance":20,"angle":"","angleVariance":360,"gravity":{"x":0,"y":0},"intendedParticles":3000},
+		
+		'comet' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":2.171,"startSize":20,"startSizeVariance":"","endSize":10,"endSizeVariance":"","position":{"x":-33,"y":-47},"positionVariance":{"x":10,"y":10},"speed":"","speedVariance":20,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":1},"radialAcceleration":-100,"radialAccelerationVariance":200,"tangentialAcceleration":-100,"tangentialAccelerationVariance":200,"angle":90,"angleVariance":360,"gravity":{"x":-200,"y":400},"intendedParticles":2250},
+		
+		'colorfulSnow' : {"texture":"snow","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":2,"lifespanVariance":1.513,"startSize":34,"startSizeVariance":24,"endSize":34,"endSizeVariance":"","position":{"x":-199,"y":9},"positionVariance":{"x":400,"y":0},"speed":59,"speedVariance":98.68,"startColor":{"red":0.9,"green":0.2,"blue":0.1,"alpha":1},"startColorVariance":{"red":0.5,"green":0.5,"blue":0.5,"alpha":1},"endColor":{"red":0,"green":0.2,"blue":0.2,"alpha":0.5},"endColorVariance":{"red":0.3,"green":0.3,"blue":0.4,"alpha":1},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":"","tangentialAccelerationVariance":"","angle":284,"angleVariance":185,"gravity":{"x":0,"y":0},"intendedParticles":1000},
+		
+		'waterFountain' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1.908,"lifespanVariance":0.855,"startSize":15,"startSizeVariance":5,"endSize":0,"endSizeVariance":0,"position":{"x":0,"y":0},"positionVariance":{"x":7,"y":7},"speed":604,"speedVariance":30,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":15,"gravity":{"x":0,"y":-750},"intendedParticles":300},
+		
+		'somethingBlue' : {"texture":"fire","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":1,"lifespanVariance":0.5,"startSize":15,"startSizeVariance":10,"endSize":4,"endSizeVariance":10,"position":{"x":0,"y":0},"positionVariance":{"x":20,"y":15},"speed":300,"speedVariance":50,"startColor":{"red":0,"green":0,"blue":1,"alpha":1},"startColorVariance":{"red":0,"green":0,"blue":1,"alpha":1},"endColor":{"red":0.9,"green":0.9,"blue":0.9,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":0,"radialAccelerationVariance":0,"tangentialAcceleration":0,"tangentialAccelerationVariance":0,"angle":90,"angleVariance":8,"gravity":{"x":0,"y":0},"intendedParticles":300},
+		
+		'smoke' : {"texture":"smoke","emitterMode":"GRAVITY","blending":"AdditiveBlending","lifespan":5,"lifespanVariance":0.5,"startSize":20,"startSizeVariance":10,"endSize":14,"endSizeVariance":10,"position":{"x":-90,"y":-104},"positionVariance":{"x":10,"y":30},"speed":"","speedVariance":"","startColor":{"red":0.1,"green":0.1,"blue":0.1,"alpha":0.2},"startColorVariance":{"red":0.01,"green":0.01,"blue":0.01,"alpha":0.2},"endColor":{"red":0,"green":0,"blue":0,"alpha":0},"endColorVariance":{"red":0,"green":0,"blue":0,"alpha":0},"radialAcceleration":"","radialAccelerationVariance":"","tangentialAcceleration":-10,"tangentialAccelerationVariance":20,"angle":90,"angleVariance":360,"gravity":{"x":5,"y":50},"intendedParticles":3000}
 		};
 	
 	(function init(win, doc) {
@@ -378,10 +412,14 @@
 		*/
 		onUserInteractionMove(container, function(obj) {
 			var pos = obj.position.page;
-			var newPos = {x:pos.x - windowHalfX, y:-1*pos.y + windowHalfY};
-			updateConfig('position', newPos, USE_EXISTING_PARTICLE_SYSTEM);
-			particleSystem.liveConfigUpdate(configurator);
-			
+
+			camera.position.x += ( pos.x - camera.position.x ) * 0.05;
+			camera.position.y += ( - pos.y - camera.position.y ) * 0.05;
+			camera.lookAt( scene.position );
+
+			//var newPos = {x:pos.x - windowHalfX, y:-1*pos.y + windowHalfY};
+			//updateConfig('position', newPos, USE_EXISTING_PARTICLE_SYSTEM);
+			//particleSystem.liveConfigUpdate(configurator);
 		});
 
 		/**
@@ -396,58 +434,64 @@
 	})(window, document);
 
 	function newParticleSystem() {
-
-		particleSystem && scene.remove(particleSystem);
-
-		var attributes = {
-			size: {	type: 'f', value: [] },
-			ca:   {	type: 'c', value: [] }
-		};
-
-		var uniforms = {
-			amplitude: { type: "f", value: 1.0 },
-			color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-			texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( 'textures/'+configurator.texture+'.png' ) },
-			transparent:{ type: "b", value: true},
-		};
-
-		uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
-
-		/** setup particles */
 		
-		/*var material = new THREE.ParticleBasicMaterial({
-			color: 0xFFFFFF,
-			size: 290,
-			map: THREE.ImageUtils.loadTexture(configurator.texture),
-			blending: THREE[configurator.blending],
-			transparent: true,
-			vertexColors: true
-		});*/
+		makeOrigin(configurator.texture, function(img) {
+			
+			particleSystem && scene.remove(particleSystem);
+	
+			var attributes = {
+				size: {	type: 'f', value: [] },
+				ca:   {	type: 'c', value: [] }
+			};
 
-		var material = new THREE.ShaderMaterial( {
-			uniforms: uniforms,
-			attributes: attributes,
-			vertexShader: document.getElementById( 'vertexshader' ).textContent,
-			fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-			blending: THREE[configurator.blending],
-			depthTest: 		false,
-			transparent:	true
+			texture = new THREE.Texture(img);
+			texture.needsUpdate = true;
+
+			var uniforms = {
+				amplitude: { type: "f", value: 1.0 },
+				color:     { type: "c", value: new THREE.Color( 0xffffff ) },
+				texture:   { type: "t", value: 0, texture: texture },
+				transparent:{ type: "b", value: true},
+			};
+	
+			uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
+	
+			/** setup particles */
+			
+			/*var material = new THREE.ParticleBasicMaterial({
+				color: 0xFFFFFF,
+				size: 290,
+				map: THREE.ImageUtils.loadTexture(configurator.texture),
+				blending: THREE[configurator.blending],
+				transparent: true,
+				vertexColors: true
+			});*/
+	
+			var material = new THREE.ShaderMaterial( {
+				uniforms: uniforms,
+				attributes: attributes,
+				vertexShader: document.getElementById( 'vertexshader' ).textContent,
+				fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+				blending: THREE[configurator.blending],
+				depthTest: 		false,
+				transparent:	true
+			});
+	
+			var particles = new THREE.Geometry();
+			
+			for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
+				particle = new PSCVertex(configurator);
+				particles.vertices[i] = particle;
+				//setup particle color
+				colors[i] = new THREE.Color();
+			}
+			particles.colors = colors;
+			
+			/** setup particle system */
+			particleSystem = new PSCParticleSystem(particles, material, configurator);
+	
+			scene.add(particleSystem);
 		});
-
-		var particles = new THREE.Geometry();
-		
-		for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
-			particle = new PSCVertex(configurator);
-			particles.vertices[i] = particle;
-			//setup particle color
-			colors[i] = new THREE.Color();
-		}
-		particles.colors = colors;
-		
-		/** setup particle system */
-		particleSystem = new PSCParticleSystem(particles, material, configurator);
-
-		scene.add(particleSystem);
 	}
 
 	(function animate(timestamp) {
@@ -458,7 +502,6 @@
 			if (sceneObjects[i] instanceof PSCParticleSystem) {
 				// refresh psc particle system
 				sceneObjects[i].refresh(timestamp);
-				//once_console("we're in");
 			}
 		}
 
@@ -471,124 +514,112 @@
 
 	})(+new Date);
 	
-	/*function render(timestamp) {
-		//camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-		//camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-		//camera.lookAt( scene.position );
-	}*/
-
-	var once = true;
-	function once_console(msg){
-		once && console.log("once: " + msg);
-		once = false;
-	}
-
 	// a lot of configuration stuff
 
-function setConfig(conf) {
-	for (var key in conf) {
-		updateConfig(key, conf[key], USE_EXISTING_PARTICLE_SYSTEM);
+	function setConfig(conf) {
+		for (var key in conf) {
+			updateConfig(key, conf[key], USE_EXISTING_PARTICLE_SYSTEM);
+		}
 	}
-}
-
-function updateConfig() {
+	
+	function updateConfig() {
+			
+		var key = arguments[0] || "";
+		var value = arguments[1] || "";
+		var createNewParticleSystemFlag = arguments[2] || CREATE_NEW_PARTICLE_SYSTEM;
 		
-	var key = arguments[0] || "";
-	var value = arguments[1] || "";
-	var createNewParticleSystemFlag = arguments[2] || CREATE_NEW_PARTICLE_SYSTEM;
-	
-	if (key.length) {
-			configurator[key] = value;
-	}
-	
-	// Point
-	if (value && typeof value.x === "number") {
-			document.querySelector('input[name='+key+'][data-key=x]').value = value.x;
-			document.querySelector('input[name='+key+'][data-key=y]').value = value.y;
-	}
-	
-	// Color
-	if (value && typeof value.red === "number") {
-			document.querySelector('input[name='+key+'][data-key=r]').value = value.red;
-			document.querySelector('input[name='+key+'][data-key=g]').value = value.green;
-			document.querySelector('input[name='+key+'][data-key=b]').value = value.blue;
-			document.querySelector('input[name='+key+'][data-key=a]').value = value.alpha;
-	}
-	
-	//numbers
-	if (value && typeof value === "number") {
-			var inputNumber = document.querySelector('input[name='+key+']');
-			if (inputNumber && inputNumber.value) {
-					inputNumber.value = value;
-			}
-	}
-	
-	// texture
-	if (value && key && key === 'texture') {
-			document.querySelector('select[name=texture]').selectedIndex = 
-			document.querySelector('select[name=texture]').querySelector('option[value='+value+']').index;
-	}
-	
-	// blending
-	if (key && key === 'blending') {
-			document.querySelector('select[name=blending]').selectedIndex = 
-			document.querySelector('select[name=blending]').querySelector('option[value='+value+']').index;
-	}
-	
-	document.querySelector('input[name=EXPORT_LONG]').value = "http://basecode.appspot.com/particlesjs#"+JSON.stringify(configurator);
-	
-	(createNewParticleSystemFlag === CREATE_NEW_PARTICLE_SYSTEM) && newParticleSystem();
-}
-
-// configurator: handle ui input-element changes
-for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
-		els[i].addEventListener("input", function handleUIInputElementChanges(e) {
-				var t = e.target;
-				console.log(t.type, t.name, t.value);
-				
-				// Points
-				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
-						var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
-						var y = +document.querySelector('input[name='+t.name+'][data-key=y]').value;
-						updateConfig(t.name, {x : x, y : y});
-						return;
+		if (key.length) {
+				configurator[key] = value;
+		}
+		
+		// Point
+		if (value && typeof value.x === "number") {
+				document.querySelector('input[name='+key+'][data-key=x]').value = value.x;
+				document.querySelector('input[name='+key+'][data-key=y]').value = value.y;
+		}
+		
+		// Color
+		if (value && typeof value.red === "number") {
+				document.querySelector('input[name='+key+'][data-key=r]').value = value.red;
+				document.querySelector('input[name='+key+'][data-key=g]').value = value.green;
+				document.querySelector('input[name='+key+'][data-key=b]').value = value.blue;
+				document.querySelector('input[name='+key+'][data-key=a]').value = value.alpha;
+		}
+		
+		//numbers
+		if (value && typeof value === "number") {
+				var inputNumber = document.querySelector('input[name='+key+']');
+				if (inputNumber && inputNumber.value) {
+						inputNumber.value = value;
 				}
-				
-				// Colors
-				if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
-						var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
-						var g = +document.querySelector('input[name='+t.name+'][data-key=g]').value;
-						var b = +document.querySelector('input[name='+t.name+'][data-key=b]').value;
-						var a = +document.querySelector('input[name='+t.name+'][data-key=a]').value;
-						updateConfig(t.name, {red : r, green : g, blue : b, alpha : a});
-						return;
-				}
-						
-				//numbers
-				if (t.type === 'number') {
-						updateConfig(t.name, +t.value);
-				}
-		}, false);
-};
-
-// configurator: handle ui select-box changes
-for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
-		els[i].addEventListener("change", function handleUISelectBoxChanges(e) {
-				
-				var t = e.target;
-				
-				// predefined configurations
-				if (t.name === "PREDEFINED_CONFIGURATIONS" && predefinedConfigurations[t.value]) {
-						setConfig(predefinedConfigurations[t.value]);
-						newParticleSystem();
-						return;
-				}
-
-				updateConfig(t.name, t.value, USE_EXISTING_PARTICLE_SYSTEM);
-				newParticleSystem();
-
-		}, false);
-};
+		}
+		
+		// texture
+		if (value && key && key === 'texture') {
+				document.querySelector('select[name=texture]').selectedIndex = 
+				document.querySelector('select[name=texture]').querySelector('option[value='+value+']').index;
+		}
+		
+		// blending
+		if (key && key === 'blending') {
+				document.querySelector('select[name=blending]').selectedIndex = 
+				document.querySelector('select[name=blending]').querySelector('option[value='+value+']').index;
+		}
+		
+		document.querySelector('input[name=EXPORT_LONG]').value = "http://basecode.github.com/psc#"+JSON.stringify(configurator);
+		
+		(createNewParticleSystemFlag === CREATE_NEW_PARTICLE_SYSTEM) && newParticleSystem();
+	}
+	
+	// configurator: handle ui input-element changes
+	for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
+			els[i].addEventListener("input", function handleUIInputElementChanges(e) {
+					var t = e.target;
+					console.log(t.type, t.name, t.value);
+					
+					// Points
+					if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
+							var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
+							var y = +document.querySelector('input[name='+t.name+'][data-key=y]').value;
+							updateConfig(t.name, {x : x, y : y});
+							return;
+					}
+					
+					// Colors
+					if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
+							var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
+							var g = +document.querySelector('input[name='+t.name+'][data-key=g]').value;
+							var b = +document.querySelector('input[name='+t.name+'][data-key=b]').value;
+							var a = +document.querySelector('input[name='+t.name+'][data-key=a]').value;
+							updateConfig(t.name, {red : r, green : g, blue : b, alpha : a});
+							return;
+					}
+							
+					//numbers
+					if (t.type === 'number') {
+							updateConfig(t.name, +t.value);
+					}
+			}, false);
+	};
+	
+	// configurator: handle ui select-box changes
+	for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
+			els[i].addEventListener("change", function handleUISelectBoxChanges(e) {
+					
+					var t = e.target;
+					
+					// predefined configurations
+					if (t.name === "PREDEFINED_CONFIGURATIONS" && predefinedConfigurations[t.value]) {
+							setConfig(predefinedConfigurations[t.value]);
+							newParticleSystem();
+							return;
+					}
+	
+					updateConfig(t.name, t.value, USE_EXISTING_PARTICLE_SYSTEM);
+					newParticleSystem();
+	
+			}, false);
+	};
 </script>
 
 <script type="text/javascript">
