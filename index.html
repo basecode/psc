@@ -321,18 +321,23 @@
 	var windowHalfY = window.innerHeight / 2;
 
 	// import config file from document.location.hash
-	(function(hash) {
+	(function(w, hash) {
 			hash = hash && hash.length > 10 && unescape(hash.substr(1));
 			if (hash) {
 					try {
 							setConfig(JSON.parse(hash));
 					} catch(e){
-							alert("sorry, but this isn't a valid configuration.");
+							console.error("sorry, but this isn't a valid configuration.");
+							hash = false;
 					}
 			}
-	})(document.location.hash);
+			w.hasHashConfig = function() {
+				return hash;
+			}
+	})(window, document.location.hash);
 
-	// CORS workaround, see: https://github.com/mrdoob/three.js/issues/687
+	// not really a CORS workaround
+	// see: https://github.com/mrdoob/three.js/issues/687
 	(function(w, aImage, aContext) {
 		var loaded = function() {
 			aContext.canvas.width = aImage.width;
@@ -353,7 +358,8 @@
 			(aImage.complete) ? loaded() : aImage.onload = loaded;
 		}
 	})(window, new Image(), document.createElement('canvas').getContext('2d'));
-	
+
+	// setup three.js
 	(function init(win, doc) {
 		var container = doc.getElementById('screen');
 
@@ -367,7 +373,12 @@
 		scene = new THREE.Scene();
 		//scene.fog = new THREE.FogExp2( 0x000000, 0.0007 );
 
-		setConfig(PREDEFINED_CONFIGURATIONS.burner);
+		// set configuration
+		if (!hasHashConfig()) {
+			setConfig(PREDEFINED_CONFIGURATIONS.burner);
+		}
+
+		// init particle system
 		newParticleSystem();
 
 		renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
