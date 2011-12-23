@@ -332,11 +332,11 @@
 					}
 			}
 			w.hasHashConfig = function() {
-				return hash;
+				return !!hash;
 			}
 	})(window, document.location.hash);
 
-	// not really a CORS workaround
+	// seems not to fix the CORS issue with firefox, safari, webkit nighlty
 	// see: https://github.com/mrdoob/three.js/issues/687
 	(function(w, aImage, aContext) {
 		var loaded = function() {
@@ -378,7 +378,7 @@
 			setConfig(PREDEFINED_CONFIGURATIONS.burner);
 		}
 
-		// init particle system
+		// init a new particle system
 		newParticleSystem();
 
 		renderer = new THREE.WebGLRenderer({ clearColor: 0x000000, clearAlpha: 1 });
@@ -437,12 +437,13 @@
 			texture.needsUpdate = true;
 
 			var uniforms = {
-				amplitude: { type: "f", value: 1.0 },
-				color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-				texture:   { type: "t", value: 0, texture: texture },
+				amplitude:  { type: "f", value: 1.0 },
+				color:      { type: "c", value: new THREE.Color( 0xffffff ) },
+				texture:    { type: "t", value: 0, texture: texture },
 				transparent:{ type: "b", value: true},
 			};
-	
+
+			// what does that mean?
 			uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
 	
 			/** setup particles */
