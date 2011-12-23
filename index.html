@@ -32,7 +32,7 @@
 				z-index: 100;
 			}
 
-			.configPanel { 
+			.configPanel {
 				position:absolute;
 				right:0;
 				top:0;
@@ -79,7 +79,7 @@
 				width:45px;
 			}
 			input[name=EXPORT_LONG], input[name=EXPORT_SHORT], input[name=IMPORT] {
-				width:170px;
+				width:230px;
 			}
 
 		</style>
@@ -246,19 +246,8 @@
 			</p>
 			<h4>PERMALINK</h4>
 			<p>
-					LONG:&nbsp;&nbsp;&nbsp;<input type="text" name="EXPORT_LONG" value="">
+					<input type="text" name="EXPORT_LONG" value="">
 			</p>
-			<p>
-					SHORT: <input type="text" name="EXPORT_SHORT" value="">
-					<input style="margin-left:45px; width:180px;" type="button" name="GENERATE_SHORT_URL" value="generate a short url">
-			</p>
-			<!--
-			<h4>IMPORT</h4>
-			<p>
-					<input type="text" name="IMPORT" value="">
-					<button name="IMPORT">OK</button>
-			</p>
-			//-->
 	</div>
 
 <script src="three.js/build/Three.js"></script>
@@ -336,6 +325,7 @@
 			}
 	})(window, document.location.hash);
 
+
 	// seems not to fix the CORS issue with firefox, safari, webkit nighlty
 	// see: https://github.com/mrdoob/three.js/issues/687
 	(function(w, aImage, aContext) {
@@ -364,7 +354,7 @@
 		var container = doc.getElementById('screen');
 
 		// Camera params:
-		// field of view, aspect ratio for render output, near and far clipping plane. 
+		// field of view, aspect ratio for render output, near and far clipping plane.
 		camera = new THREE.PerspectiveCamera(90);
 		// move the camera backwards so we can see stuff!
 		camera.position.z = 300;
@@ -423,11 +413,11 @@
 	})(window, document);
 
 	function newParticleSystem() {
-		
+
 		makeOrigin(configurator.texture, function(img) {
-			
+
 			particleSystem && scene.remove(particleSystem);
-	
+
 			var attributes = {
 				size: {	type: 'f', value: [] },
 				ca:   {	type: 'c', value: [] }
@@ -445,9 +435,9 @@
 
 			// what does that mean?
 			uniforms.texture.texture.wrapS = uniforms.texture.texture.wrapT = THREE.RepeatWrapping;
-	
+
 			/** setup particles */
-			
+
 			/*var material = new THREE.ParticleBasicMaterial({
 				color: 0xFFFFFF,
 				size: 290,
@@ -456,7 +446,7 @@
 				transparent: true,
 				vertexColors: true
 			});*/
-	
+
 			var material = new THREE.ShaderMaterial( {
 				uniforms: uniforms,
 				attributes: attributes,
@@ -466,9 +456,9 @@
 				depthTest: 		false,
 				transparent:	true
 			});
-	
+
 			var particles = new THREE.Geometry();
-			
+
 			for (var i = 0, colors = [], len = configurator.intendedParticles, particle; i < len; i++ ) {
 				particle = new PSCVertex(configurator);
 				particles.vertices[i] = particle;
@@ -476,10 +466,10 @@
 				colors[i] = new THREE.Color();
 			}
 			particles.colors = colors;
-			
+
 			/** setup particle system */
 			particleSystem = new PSCParticleSystem(particles, material, configurator);
-	
+
 			scene.add(particleSystem);
 		});
 	}
@@ -503,7 +493,7 @@
 		return;
 
 	})(+new Date);
-	
+
 	// a lot of configuration stuff
 
 	function setConfig(conf) {
@@ -511,23 +501,23 @@
 			updateConfig(key, conf[key], USE_EXISTING_PARTICLE_SYSTEM);
 		}
 	}
-	
+
 	function updateConfig() {
-			
+
 		var key = arguments[0] || "";
-		var value = arguments[1] || "";
+		var value = arguments[1] || "";
 		var createNewParticleSystemFlag = arguments[2] || CREATE_NEW_PARTICLE_SYSTEM;
-		
+
 		if (key.length) {
 				configurator[key] = value;
 		}
-		
+
 		// Point
 		if (value && typeof value.x === "number") {
 				document.querySelector('input[name='+key+'][data-key=x]').value = value.x;
 				document.querySelector('input[name='+key+'][data-key=y]').value = value.y;
 		}
-		
+
 		// Color
 		if (value && typeof value.red === "number") {
 				document.querySelector('input[name='+key+'][data-key=r]').value = value.red;
@@ -535,7 +525,7 @@
 				document.querySelector('input[name='+key+'][data-key=b]').value = value.blue;
 				document.querySelector('input[name='+key+'][data-key=a]').value = value.alpha;
 		}
-		
+
 		//numbers
 		if (value && typeof value === "number") {
 				var inputNumber = document.querySelector('input[name='+key+']');
@@ -543,30 +533,30 @@
 						inputNumber.value = value;
 				}
 		}
-		
+
 		// texture
 		if (value && key && key === 'texture') {
-				document.querySelector('select[name=texture]').selectedIndex = 
+				document.querySelector('select[name=texture]').selectedIndex =
 				document.querySelector('select[name=texture]').querySelector('option[value='+value+']').index;
 		}
-		
+
 		// blending
 		if (key && key === 'blending') {
-				document.querySelector('select[name=blending]').selectedIndex = 
+				document.querySelector('select[name=blending]').selectedIndex =
 				document.querySelector('select[name=blending]').querySelector('option[value='+value+']').index;
 		}
-		
+
 		document.querySelector('input[name=EXPORT_LONG]').value = "http://basecode.github.com/psc#"+JSON.stringify(configurator);
-		
+
 		(createNewParticleSystemFlag === CREATE_NEW_PARTICLE_SYSTEM) && newParticleSystem();
 	}
-	
+
 	// configurator: handle ui input-element changes
 	for (var i = 0, els = document.getElementsByTagName('input'), len = els.length; i < len; i++) {
 			els[i].addEventListener("input", function handleUIInputElementChanges(e) {
 					var t = e.target;
 					console.log(t.type, t.name, t.value);
-					
+
 					// Points
 					if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'point') {
 							var x = +document.querySelector('input[name='+t.name+'][data-key=x]').value;
@@ -574,7 +564,7 @@
 							updateConfig(t.name, {x : x, y : y});
 							return;
 					}
-					
+
 					// Colors
 					if (t.getAttribute('data-type') && t.getAttribute('data-type') === 'color') {
 							var r = +document.querySelector('input[name='+t.name+'][data-key=r]').value;
@@ -584,30 +574,30 @@
 							updateConfig(t.name, {red : r, green : g, blue : b, alpha : a});
 							return;
 					}
-							
+
 					//numbers
 					if (t.type === 'number') {
 							updateConfig(t.name, +t.value);
 					}
 			}, false);
 	};
-	
+
 	// configurator: handle ui select-box changes
 	for (var i = 0, els = document.getElementsByTagName('select'), len = els.length; i < len; i++) {
 			els[i].addEventListener("change", function handleUISelectBoxChanges(e) {
-					
+
 					var t = e.target;
-					
+
 					// predefined configurations
 					if (t.name === "PREDEFINED_CONFIGURATIONS" && PREDEFINED_CONFIGURATIONS[t.value]) {
 							setConfig(PREDEFINED_CONFIGURATIONS[t.value]);
 							newParticleSystem();
 							return;
 					}
-	
+
 					updateConfig(t.name, t.value, USE_EXISTING_PARTICLE_SYSTEM);
 					newParticleSystem();
-	
+
 			}, false);
 	};
 </script>
@@ -618,7 +608,7 @@ if (window.location.hostname !== "localhost" && window.location.hostname !== "12
 		var _gaq = _gaq || [];
 		_gaq.push(['_setAccount', 'UA-24324453-1']);
 		_gaq.push(['_trackPageview']);
-		
+
 		(function() {
 		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
